@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace ARMACMan\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -13,6 +13,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name', 'email', 'password'
+    ];
+    protected $hidden = [
+        'password', 'remember_token', 'created_at', 'updated_at'
     ];
 
     /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace ARMACMan\Repositories;
 
-use App\Models\User;
+use ARMACMan\Models\User;
 
 class UserRepository extends EloquentRepository
 {
@@ -14,5 +14,10 @@ class UserRepository extends EloquentRepository
     public function __construct(User $model)
     {
         $this->model = $model;
+    }
+
+    public function getByEmail($email)
+    {
+        return $this->model->where('email', $email)->first();
     }
 }

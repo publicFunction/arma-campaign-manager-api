@@ -1,72 +1,98 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace ARMACMan\Http\Controllers\Auth;
 
-use App\User;
-use Validator;
-use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+
+use ARMACMan\Repositories\UserRepository;
+use ARMACMan\Models\User;
+use ARMACMan\Http\Controllers\Controller;
+
+use Dingo\Api\Http\Request;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Registration & Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users, as well as the
-    | authentication of existing users. By default, this controller uses
-    | a simple trait to add these behaviors. Why don't you explore it?
-    |
-    */
-
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
-    /**
-     * Where to redirect users after login / registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
-    /**
-     * Create a new authentication controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest', ['except' => 'logout']);
+    
+    private $user_repo;
+    
+    public function __construct(UserRepository $userRepository) {
+        $this->user_repo = $userRepository;
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
+     * Responsible for logging the user into the Application and with JWT
+     * POST : {"email" : "email@example.com", "password" : "password"}
+     * @param Request $request
+     * @return mixed
      */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|confirmed|min:6',
-        ]);
+    public function auth(Request $request) {
+        $auth_request = $request->all();
+
+        if(!$this->validateAuth($auth_request)) {
+            return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Request Invalid'], 403);
+        }
+
+        $user = $this->user_repo->getByEmail($auth_request['email']);
+        if(null === $user) {
+            return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Failed - User Does Not Exist'], 403);
+        }
+
+        if(\Auth::attempt($auth_request)) {
+            try {
+                if(! $token = JWTAuth::attempt($auth_request)) {
+                    return response()->json(['status' => 'JWTAuth', 'error' => 'Authorisation Failed'], 401);
+                }
+            } catch (JWTException $e) {
+                return response()->json(['status' => 'JWTException', 'error' => 'Token Generation Failed'], 401);
+            }
+            $payload = $this->createAuthPayload($user, $token);
+            return response()->json($payload, 200);
+        }
+        return response()->json(['status' => 'JWTAuth', 'error' => 'Authorisation Failed'], 403);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return User
-     */
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+    public function me() {
+        try {
+            if (! $user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Failed - User Does Not Exist'], 403);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Failed - User Does Not Exist'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Failed - Token Invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' => 'Authorisation Failed - Token Not Supplied'], $e->getStatusCode());
+        }
+
+        return response()->json(compact('user'), 200);
     }
+
+    public function logout() {
+        try {
+            if (! $user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['status' => 'Forbidden', 'error' =>'Authorisation Failed - User Does Not Exist'], 403);
+            }
+        } catch (TokenExpiredException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' =>'Authorisation Failed - User Does Not Exist'], $e->getStatusCode());
+        } catch (TokenInvalidException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' =>'Authorisation Failed - Token Invalid'], $e->getStatusCode());
+        } catch (JWTException $e) {
+            return response()->json(['status' => 'Forbidden', 'error' =>'Authorisation Failed - Token Not Supplied'], $e->getStatusCode());
+        }
+
+        JWTAuth::parseToken()->invalidate();
+        \Auth::logout();
+
+        return response()->json(['status' => 'Success', 'error' => null, 'message' => 'Logged out'], 200);
+    }
+
+    private function createAuthPayload(User $user, $token) {
+        $payload['user'] = $user;
+        $payload['token'] = $token;
+        return $payload;
+    }
+
 }

@@ -151,11 +151,16 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        ARMACMan\Providers\AppServiceProvider::class,
+        ARMACMan\Providers\AuthServiceProvider::class,
+        ARMACMan\Providers\EventServiceProvider::class,
+        ARMACMan\Providers\RouteServiceProvider::class,
 
+        /*
+         * 3rd Party Service Providers
+         */
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
+        Dingo\Api\Provider\LaravelServiceProvider::class,
     ],
 
     /*
@@ -201,6 +206,9 @@ return [
         'URL'       => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View'      => Illuminate\Support\Facades\View::class,
+        
+        'JWTAuth'       => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory'    => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 

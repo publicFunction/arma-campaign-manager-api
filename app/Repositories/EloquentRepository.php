@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Repositories;
+namespace ARMACMan\Repositories;
 
 /**
  * Provides properties and methods that are common to all repositories that back up an Eloquent model.
  *
  * Class EloquentRepository
- * @package App\Repositories
+ * @package ARMACMan\Repositories
  */
 abstract class EloquentRepository
 {

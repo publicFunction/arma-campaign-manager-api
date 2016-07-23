@@ -3,7 +3,5 @@
 /.idea
 /.vagrant
 /public/dist
-Homestead.yaml
-Homestead.json
 .env
 
