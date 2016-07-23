@@ -15,6 +15,9 @@ class Controller extends BaseController
 
     protected function validateAuth($payload) {
         $valid = true;
+        if(count($this->auth_payload) !== count($payload)) {
+            $valid = false;
+        }
         foreach ($this->auth_payload as $field) {
             if(!array_key_exists($field, $payload)) {
                 $valid = false;
