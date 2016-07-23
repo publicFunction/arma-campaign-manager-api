@@ -2,7 +2,8 @@
 
 $api = app('Dingo\Api\Routing\Router');
 
-$api->version('v1', ['prefix' => '/v1/', 'namespace' => '\ARMACMan\Http\Controllers'], function ($api) {
+$api->version('v1', ['prefix' => '/v1/', 'middleware' => 'cors', 'namespace' => '\ARMACMan\Http\Controllers'], function ($api) {
+    
     $api->get('/', function() {
         return response()->json(['message' => 'Not Found'], 404);
     });
