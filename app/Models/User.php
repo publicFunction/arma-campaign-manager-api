@@ -2,10 +2,14 @@
 
 namespace ARMACMan\Models;
 
+
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+
+    use SoftDeletes;
     /**
      * The attributes that are mass assignable.
      *
@@ -15,7 +19,7 @@ class User extends Authenticatable
         'name', 'email', 'password'
     ];
     protected $hidden = [
-        'password', 'remember_token', 'created_at', 'updated_at'
+        'password', 'remember_token', 'created_at', 'updated_at', 'deleted_at'
     ];
 
     /**
@@ -27,4 +31,9 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+    public function roles() {
+        return $this->belongsToMany(Roles::class, 'users_roles', 'user_id', 'role_id');
+    }
+
 }

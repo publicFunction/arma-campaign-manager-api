@@ -17,7 +17,8 @@ $api->version('v1', ['prefix' => '/v1/', 'middleware' => 'cors', 'namespace' => 
 
     $api->group(['middleware' => 'jwt.auth'], function ($api) {
         $api->get('test', function() {
-            return response()->json(['hello' => 'world'], 200);
+            $users = \ARMACMan\Models\Roles::with('users')->get();
+            return response()->json($users, 200);
         });
 
 
