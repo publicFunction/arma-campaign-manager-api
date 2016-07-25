@@ -10,7 +10,17 @@ class Community extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'community';
+
     public function owner() {
         return $this->hasOne(User::class);
+    }
+
+    public function profile() {
+        return $this->belongsTo(CommunityProfile::class);
+    }
+
+    public function members() {
+        return $this->hasMany(CommunityMembers::class);
     }
 }
