@@ -15,6 +15,13 @@ $api->version('v1', ['prefix' => '/v1/', 'middleware' => 'cors', 'namespace' => 
     $api->post('auth', 'Auth\AuthController@auth'); //Logs in a current registered user into Laravel and JWT Auth
     $api->delete('auth', 'Auth\AuthController@logout'); //Logs in a current registered user into Laravel and JWT Auth
 
+    $api->group(['middleware' => 'jwt.auth'], function ($api) {
+        $api->get('test', function() {
+            return response()->json(['hello' => 'world'], 200);
+        });
+
+
+    });
 
 
 });
