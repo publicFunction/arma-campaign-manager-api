@@ -19,9 +19,6 @@ class CommunityController extends Controller
     public function index() {
         $user = \Auth::user();
         $community = $this->repository->getByUser($user);
-
-        //return response()->json($community, 200);
-        
         return response()->json($this->transformer->transform($community));
     }
 
