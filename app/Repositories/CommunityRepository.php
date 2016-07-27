@@ -17,8 +17,8 @@ class CommunityRepository extends EloquentRepository
         $this->model = $model;
     }
 
-    public function getByOwner(User $owner)
+    public function getByUser(User $user)
     {
-        return $this->model->where('owner_id', $owner->id)->with(['profile', 'members', 'members.member', 'members.member.user', 'members.member.profile'])->first();
+        return $this->model->where('owner_id', $user->id)->first();
     }
 }
