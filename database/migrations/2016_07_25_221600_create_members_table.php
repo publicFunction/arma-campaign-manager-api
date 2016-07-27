@@ -18,7 +18,7 @@ class CreateMembersTable extends Migration
             $table->unsignedInteger('profile_id', false);
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('profile_id')->references('id')->on('user_profile');
+            $table->foreign('profile_id')->references('id')->on('member_profile');
 
             $table->timestamps();
             $table->softDeletes();
