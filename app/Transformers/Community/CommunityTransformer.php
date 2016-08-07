@@ -22,6 +22,7 @@ class CommunityTransformer extends Transformer
             'name' => $community->name,
             'profile' => $community->profile,
             'owner' => $community->owner,
+            'servers' => $community->servers,
             'totalMembers' => count($community->members)
         ];
         return $transformed;

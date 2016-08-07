@@ -23,7 +23,8 @@ $api->version('v1', ['prefix' => '/v1/', 'middleware' => 'cors', 'namespace' => 
         });
 
         $api->get('community', 'Community\CommunityController@index');
-
+        $api->get('community/servers', 'Community\CommunityController@servers');
+        $api->get('community/servers/{server_id}', 'Community\CommunityController@server');
 
     });
 
