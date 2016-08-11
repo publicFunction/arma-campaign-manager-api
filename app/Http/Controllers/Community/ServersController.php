@@ -30,8 +30,7 @@ class ServersController extends Controller
     public function status($server_id)
     {
         $server = $this->repository->getById($server_id);
-        var_dump($this->helper->getServerInfo($server));
-
+        return response()->json($this->helper->getServerInfo($server));
     }
 
 }
