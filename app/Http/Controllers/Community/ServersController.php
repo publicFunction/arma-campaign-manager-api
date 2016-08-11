@@ -3,23 +3,35 @@
 namespace ARMACMan\Http\Controllers\Community;
 
 
+use ARMACMan\Helpers\ServerHelper;
 use ARMACMan\Http\Controllers\Controller;
-use ARMACMan\Repositories\CommunityRepository;
-use ARMACMan\Transfomers\Community\CommunityTransformer;
+use ARMACMan\Repositories\ServersRepository;
+use ARMACMan\Transfomers\Community\ServerTransformer;
+
 
 class ServersController extends Controller
 {
+    private $repository;
+    private $transformer;
+    private $helper;
 
-    public function __construct(CommunityRepository $communityRepository, CommunityTransformer $communityTransformer)
+    public function __construct(ServersRepository $serversRepository, ServerTransformer $serverTransformer, ServerHelper $serverHelper)
     {
-        $this->repository = $communityRepository;
-        $this->transformer = $communityTransformer;
+        $this->repository = $serversRepository;
+        $this->transformer = $serverTransformer;
+        $this->helper = new $serverHelper();
     }
 
-    public function index() {
-        $user = \Auth::user();
-        $community = $this->repository->getByUser($user);
-        return response()->json($this->transformer->transform($community));
+    public function index()
+    {
+        return response()->json([], 404);
+    }
+
+    public function status($server_id)
+    {
+        $server = $this->repository->getById($server_id);
+        var_dump($this->helper->getServerInfo($server));
+
     }
 
 }
