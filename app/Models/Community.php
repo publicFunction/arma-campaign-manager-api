@@ -24,4 +24,9 @@ class Community extends Model
     public function members() {
         return $this->hasMany(CommunityMembers::class);
     }
+
+    public function servers() {
+        return $this->hasMany(Servers::class);
+    }
+
 }

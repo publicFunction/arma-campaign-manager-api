@@ -22,8 +22,13 @@ $api->version('v1', ['prefix' => '/v1/', 'middleware' => 'cors', 'namespace' => 
             return response()->json($users, 200);
         });
 
+        // Community Routes
         $api->get('community', 'Community\CommunityController@index');
+        $api->get('community/servers', 'Community\CommunityController@servers');
+        $api->get('community/servers/{server_id}', 'Community\CommunityController@server');
 
+        //Server Routes
+        $api->get('servers/{server_id}/status', 'Community\ServersController@status');
 
     });
 
